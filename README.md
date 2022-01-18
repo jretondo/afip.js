@@ -1,4 +1,4 @@
-//Etos es un fork creado para dar soporte a typescript => Luego haré más documentación al respecto
+//Este repositorio es un fork creado para dar soporte a typescript => Luego haré más documentación al respecto
 
 <!-- PROJECT SHIELDS -->
 [![NPM][npm-shield]](https://www.npmjs.com/package/@afipsdk/afip.js)
