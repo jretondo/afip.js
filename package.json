@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AfipSDK/afip.js"
+    "url": "git+https://github.com/jretondo/afip.js"
   },
   "keywords": [
     "web-service",
@@ -19,9 +19,9 @@
   "author": "Javier Retondo <jretondo@nekonet.com.ar>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/AfipSDK/afip.js/issues"
+    "url": "https://github.com/jretondo/afip.js/issues"
   },
-  "homepage": "https://github.com/AfipSDK/afip.js#readme",
+  "homepage": "https://github.com/jretondo/afip.js#readme",
   "dependencies": {
     "node-forge": "^1.2.1",
     "soap": "^0.43.0",
