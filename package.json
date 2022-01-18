@@ -1,7 +1,7 @@
 {
-  "name": "@afipsdk/afip.js",
-  "version": "0.7.3",
-  "description": "Libreria para usar los Web Services de AFIP con JavaScript",
+  "name": "afip-ws",
+  "version": "1.2.1",
+  "description": "Libreria para usar los Web Services de AFIP con JavaScript y Typescript",
   "main": "src/Afip.js",
   "scripts": {
     "test": "echo \"No test specified\""
@@ -16,15 +16,15 @@
     "padron",
     "afip"
   ],
-  "author": "AfipSDK <afipsdk@gmail.com>",
+  "author": "Javier Retondo <jretondo@nekonet.com.ar>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/AfipSDK/afip.js/issues"
   },
   "homepage": "https://github.com/AfipSDK/afip.js#readme",
   "dependencies": {
-    "node-forge": "^0.10.0",
-    "soap": "^0.24.0",
+    "node-forge": "^1.2.1",
+    "soap": "^0.43.0",
     "xml2js": "^0.4.22"
   },
   "engines": {
