@@ -1,6 +1,6 @@
 {
   "name": "jretondo-afip-ws",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Libreria para usar los Web Services de AFIP con JavaScript y Typescript",
   "main": "src/Afip.js",
   "scripts": {
