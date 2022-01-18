@@ -1,4 +1,5 @@
-//Este repositorio es un fork creado para dar soporte a typescript => Luego haré más documentación al respecto
+//Este repositorio es un fork creado para dar soporte a typescript => Luego haré más documentación al respecto.
+//La idea es expandir este fork para que pueda ser lo más sencillo de usar y adaptable a cualquier necesidad
 
 <!-- PROJECT SHIELDS -->
 [![NPM][npm-shield]](https://www.npmjs.com/package/@afipsdk/afip.js)
