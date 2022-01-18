@@ -1,5 +1,5 @@
 //Se importa el módulo jretondo-afip-ws 
-import Afip from 'jretondo-afip-ws'
+import Afip from 'ts-afip-ws'
 
 //Creo una interface con la respuesta esperada
 interface ResponseAfip {

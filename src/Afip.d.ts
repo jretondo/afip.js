@@ -127,7 +127,7 @@ declare interface FactInscriptoProdNC extends FactBase, FactInscriptos, FactProd
 declare interface FactInscriptoServNC extends FactBase, FactInscriptos, FactServicios, FactNotaCred {
 }
 
-declare module "jretondo-afip-ws" {
+declare module "ts-afip-ws" {
     interface options {
         CUIT: number,
         res_folder: string,
