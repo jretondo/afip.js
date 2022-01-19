@@ -453,10 +453,93 @@ declare module "ts-afip-ws" {
             | FactInscriptoServ
             | FactInscriptoProdNC
             | FactInscriptoServNC
-        ): Promise<{
-            CAE: string,
-            CAEFchVto: string
-        }>
+        ): Promise<
+            FactMonotribProd
+            | FactMonotribServ
+            | FactMonotribProdNC
+            | FactMonotribServNC
+            | FactInscriptoProd
+            | FactInscriptoServ
+            | FactInscriptoProdNC
+            | FactInscriptoServNC
+        >,
+
+        /**
+         * Obtener información de un comprobante en particular
+         * @param ncbte en el nñumero de factura o recibo a consultar
+         * @param pv es el punto de venta a consultar
+         * @param tipo es el tipo de comprobante, consultar los tipos en https://www.afip.gob.ar/canasta-alimentaria/documentos/Tipos-de-comprobantes-de-ventas.pdf, en este paquete hay un enum con los más usados
+         * @example
+         * //La respuesta es un objeto con toda la información del comprobante, tal cual como en la interfaz presente:
+         * const dataFactReq = {
+                CantReg: number,
+                PtoVta: number,
+                CbteTipo: CbteTipos,
+                DocTipo: DocTipos,
+                DocNro: number,
+                CbteFch: string,
+                ImpTotal: number,
+                MonCotiz: 1,
+                MonId: "PES",
+                CbteDesde?: number,
+                CbteHasta?: number,
+                CAE?: string,
+                CAEFchVto?: string
+                .
+                .                
+         * //Los demas datos van a depender Tipo de venta:
+         * //Productos
+         *      .
+         *      Concepto: "Productos"
+         *      .
+         * // Servicios
+         *      .
+         *      Concepto: "Servicios",
+                FchServDesde: string,
+                FchServHasta: string,
+                FchVtoPago: string
+                .
+         * 
+         * //Y tambien de si es Monotributista:
+         *      .
+         *      ImpTotConc: 0,
+                ImpNeto: number,
+                ImpOpEx: 0,
+                ImpIVA: 0,
+                ImpTrib: 0
+                .
+         *  //O si es inscripto (Res inscripto, Exento, etc...) 
+         *      .
+         *      ImpTotConc: number,
+                ImpNeto: number,
+                ImpOpEx: number,
+                ImpIVA: number,
+                ImpTrib: number,
+                Tributos?: {
+                    id: TiposTributo,
+                        BaseImp: number,
+                        Alic: number,
+                        Importe: number,
+                        Desc?: string,
+                    },
+                    Iva?: {
+                        Id: AlicuotasIva,
+                        BaseImp: number,
+                        Importe: number
+                    }
+         *      }
+         *
+         */
+        getVoucherInfo(ncbte: number, pv: number, tipo: CbteTipos): Promise<
+            FactMonotribProd
+            | FactMonotribServ
+            | FactMonotribProdNC
+            | FactMonotribServNC
+            | FactInscriptoProd
+            | FactInscriptoServ
+            | FactInscriptoProdNC
+            | FactInscriptoServNC
+        >
     }
 
     export interface Afip {
