@@ -215,12 +215,22 @@ declare module "ts-afip-ws" {
         authserver: string
     }
 
+    /**
+     * Función relacionada con todo lo relaciona a consulta de padrón A5
+     * @example
+     * //Contiene los siguientes métodos
+     * 
+     * function getServerStatus() //Obtiene el estado del servicio
+     * function getTaxpayerDetails(CUIT: number) //Obtiene todos los datos del contribuyente. Ver interface.
+     * 
+     *
+     */
     interface RegisterScopeFive {
 
         /**
          * Función para obtener datos de un contribuyente, tipo de consulta A5
          * 
-         * @param CUIT => cuit del contribuyente a consultar
+         * @param CUIT cuit del contribuyente a consultar
          * 
          * @example
          * //Esqueleto de la respuesta
