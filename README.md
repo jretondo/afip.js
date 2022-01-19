@@ -20,7 +20,6 @@ En el caso de encontrar un error, crear un issue o pull request en GitHub [segui
 ## Documentación
 
 * [Sitio del Proyecto](https://github.com/jretondo/afip.js)
-
 * [Introducción](#introducción)
 * [Instalación](#instalación)
 * [Uso](#uso)
@@ -48,7 +47,7 @@ Que permite obtener los certificados y asociar servicios para probar la API en e
 
 ## Uso
 
-Por el momento hay un ssolo ejemplo de uso, creando una clase con los diferentes métodos posibles
+Por el momento hay un solo ejemplo de uso, creando una clase con los diferentes métodos posibles
 
 ### Ejemplo (AfipClass.ts)
 

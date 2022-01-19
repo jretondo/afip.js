@@ -1,6 +1,6 @@
 {
   "name": "ts-afip-ws",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Libreria para usar los Web Services de AFIP con JavaScript y Typescript",
   "main": "src/Afip.js",
   "scripts": {
