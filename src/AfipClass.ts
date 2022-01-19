@@ -1,5 +1,5 @@
 //Se importa el módulo jretondo-afip-ws 
-import Afip from 'ts-afip-ws'
+import Afip from 'ts-afip-ws';
 
 enum resStatus {
     ok = 200,
@@ -18,13 +18,20 @@ export class AfipClass {
     ) {
         this.afip = new Afip({
             CUIT: this.CUIT,
-            res_folder: `${__dirname}/certs/`,
+            res_folder: `${__dirname}/afip/cert/`,
             cert: this.cert,
             key: this.key,
-            ta_folder: `${__dirname}/token/`,
+            ta_folder: `${__dirname}/afip/cert/`,
             production: this.production
         })
     }
+
+    setParams(newCuit: number, newCert: string, newKey: string) {
+        this.CUIT = newCuit;
+        this.cert = newCert;
+        this.key = newKey;
+    }
+
     async getServerStatusDataCUIT(): Promise<{
         status: resStatus,
         data: string
