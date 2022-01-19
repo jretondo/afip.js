@@ -24,7 +24,6 @@ En el caso de encontrar un error, crear un issue o pull request en GitHub [segui
 * [Introducción](#introducción)
 * [Instalación](#instalación)
 * [Uso](#uso)
-* [Testing](#testing)
 * [Documentación Afip](http://www.afip.gob.ar/ws/)
 
 ## Instalación
