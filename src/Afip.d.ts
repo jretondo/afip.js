@@ -42,6 +42,81 @@ declare enum AlicuotasIva {
     "2,5%" = 9
 }
 
+declare interface datosGenerales {
+    domicilioFiscal: {
+        codPostal: string,
+        descripcionProvincia: string,
+        direccion: string,
+        idProvincia: number,
+        tipoDomicilio: string,
+        localidad?: string,
+    },
+    estadoClave: string,
+    idPersona: number,
+    mesCierre: number,
+    tipoClave: string,
+    tipoPersona: "FISICA" | "JURIDICA"
+}
+declare interface datGenPerFisica extends datosGenerales {
+    apellido: string,
+    nombre: string
+}
+declare interface datGenPerJuridica extends datosGenerales {
+    fechaContratoSocial: string,
+    razonSocial: string
+}
+declare interface DataCUIT {
+    datosGenerales: datGenPerFisica | datGenPerJuridica,
+    datosRegimenGeneral?: {
+        actividad?: Array<{
+            descripcionActividad: string,
+            idActividad: number,
+            nomenclador: number,
+            orden: number,
+            periodo: number
+        }>,
+        impuesto?: Array<{
+            descripcionImpuesto: string,
+            idImpuesto: number,
+            periodo: number
+        }>,
+        regimen?: Array<{
+            descripcionRegimen: string,
+            idImpuesto: number,
+            idRegimen: number,
+            periodo: number,
+            tipoRegimen?: string
+        }>
+    },
+    datosMonotributo?: {
+        actividad: Array<{
+            descripcionActividad: string,
+            idActividad: number,
+            nomenclador: number,
+            orden: number,
+            periodo: number
+        }>,
+        actividadMonotributista: {
+            descripcionActividad: string,
+            idActividad: number,
+            nomenclador: number,
+            orden: number,
+            periodo: number
+        },
+        categoriaMonotributo: {
+            descripcionCategoria: string,
+            idCategoria: number,
+            idImpuesto: number,
+            periodo: number
+        },
+        impuesto?: Array<{
+            descripcionImpuesto: string,
+            idImpuesto: number,
+            periodo: number
+        }>
+    }
+}
+
 declare interface FactBase {
     CantReg: number,
     PtoVta: number,
@@ -66,10 +141,7 @@ declare interface FactServicios {
 }
 
 declare interface FactProductos {
-    Concepto: Conceptos.Productos,
-    FchServDesde: null,
-    FchServHasta: null,
-    FchVtoPago: null
+    Concepto: Conceptos.Productos
 }
 
 declare interface FactMonotrib {
@@ -144,13 +216,224 @@ declare module "ts-afip-ws" {
     }
 
     interface RegisterScopeFive {
-        getTaxpayerDetails(CUIT: number): Promise<any> | null,
+
+        /**
+         * Función para obtener datos de un contribuyente, tipo de consulta A5
+         * 
+         * @param CUIT => cuit del contribuyente a consultar
+         * 
+         * @example
+         * //Esqueleto de la respuesta
+         * const DataCUIT = {
+                datosGenerales: {
+                    domicilioFiscal: {
+                    codPostal: string,
+                    descripcionProvincia: string,
+                    direccion: string,
+                    idProvincia: number,
+                    tipoDomicilio: string,
+                    localidad?: string,
+                },
+                estadoClave: string,
+                idPersona: number,
+                mesCierre: number,
+                tipoClave: string,
+                tipoPersona: "FISICA" | "JURIDICA",
+                .
+                //Si es persona fisica:
+                apellido?: string,
+                nombre?: string,
+                .
+                //Si es persona juridica:
+                fechaContratoSocial: string,
+                razonSocial: string
+                }
+                datosRegimenGeneral?: {
+                    actividad?: Array<{
+                        descripcionActividad: string,
+                        idActividad: number,
+                        nomenclador: number,
+                        orden: number,
+                        periodo: number
+                    }>,
+                    impuesto?: Array<{
+                        descripcionImpuesto: string,
+                        idImpuesto: number,
+                        periodo: number
+                    }>,
+                    regimen?: Array<{
+                        descripcionRegimen: string,
+                        idImpuesto: number,
+                        idRegimen: number,
+                        periodo: number,
+                        tipoRegimen?: string
+                    }>
+                },
+                datosMonotributo?: {
+                    actividad: Array<{
+                        descripcionActividad: string,
+                        idActividad: number,
+                        nomenclador: number,
+                        orden: number,
+                        periodo: number
+                    }>,
+                    actividadMonotributista: {
+                        descripcionActividad: string,
+                        idActividad: number,
+                        nomenclador: number,
+                        orden: number,
+                        periodo: number
+                    },
+                    categoriaMonotributo: {
+                        descripcionCategoria: string,
+                        idCategoria: number,
+                        idImpuesto: number,
+                        periodo: number
+                    },
+                    impuesto?: Array<{
+                        descripcionImpuesto: string,
+                        idImpuesto: number,
+                        periodo: number
+                    }>
+                }
+            }
+         */
+        getTaxpayerDetails(CUIT: number): Promise<DataCUIT> | null,
+        /**
+         * Obtener el estado de servidores de padrón A5
+         * @example
+         * //Respuesta de ejemplo, en caso de funcionar
+         * {
+         * appserver: "OK",
+         * dbserver: "OK",
+         * authserver: "OK"
+         * }
+         */
         getServerStatus(): Promise<ServerStatus>
     }
 
+
+    /**
+     * Función relacionada con todo lo relaciona a faturación
+     * @example
+     * //Contiene los siguientes métodos
+     * 
+     * function getServerStatus() //Obtiene el estado del servicio
+     * function getLastVoucher(pv: number, tipo: number) //Obtiene el último núemro de factura
+     * function createVoucher(data:
+        FactMonotribProd
+        | FactMonotribServ
+        | FactMonotribProdNC
+        | FactMonotribServNC
+        | FactInscriptoProd
+        | FactInscriptoServ
+        | FactInscriptoProdNC
+        | FactInscriptoServNC) //Crea una factura nueva, ver las interfaces para poder crearlas
+     * 
+     *
+     */
     interface ElectronicBilling {
+        /**
+         * Obtener el estado de servidores de para facturación electrónica
+         * @example
+         * //Respuesta de ejemplo, en caso de funcionar
+         * {
+         * appserver: "OK",
+         * dbserver: "OK",
+         * authserver: "OK"
+         * }
+         *
+         */
         getServerStatus(): Promise<ServerStatus>,
+        /**
+         * Obtener último comprobante emitido de un punto de venta y tipo de factura
+         * @param pv es el punto de venta a consultar
+         * @param tipo es el tipo de comprobante, consultar los tipos en https://www.afip.gob.ar/canasta-alimentaria/documentos/Tipos-de-comprobantes-de-ventas.pdf, en este paquete hay un enum con los más usados
+         * @example
+         * //La respuesta siempre es un número, en caso de no corresponder salta un error del servidor. Capturar con un catch y try
+         * try {
+         *     const ultFact = await this.afip.ElectronicBilling.getLastVoucher(pv, tipo);
+         *     return ultFact;
+         *   } catch (error) {
+         *     throw new Error(error)
+         *   }
+         *
+         */
         getLastVoucher(pv: number, tipo: number): Promise<number>,
+        /**
+         * Crear un nuevo comprobante
+         * @param data Acá tiene que ir todo lo necesario para crear un nuevo comprobante, en las interfaces verá todo lo necesario. 
+         * @example
+         * //Hay datos generales que se le pide a todas las facturas:
+         * const dataFactReq = {
+                CantReg: number,
+                PtoVta: number,
+                CbteTipo: CbteTipos,
+                DocTipo: DocTipos,
+                DocNro: number,
+                CbteFch: string,
+                ImpTotal: number,
+                MonCotiz: 1,
+                MonId: "PES",
+                CbteDesde?: number,
+                CbteHasta?: number,
+                CAE?: string,
+                CAEFchVto?: string
+                .
+                .                
+         * //Los demas datos van a depender Tipo de venta:
+         * //Productos
+         *      .
+         *      Concepto: "Productos"
+         *      .
+         * // Servicios
+         *      .
+         *      Concepto: "Servicios",
+                FchServDesde: string,
+                FchServHasta: string,
+                FchVtoPago: string
+                .
+         * 
+         * //Y tambien de si es Monotributista:
+         *      .
+         *      ImpTotConc: 0,
+                ImpNeto: number,
+                ImpOpEx: 0,
+                ImpIVA: 0,
+                ImpTrib: 0
+                .
+         *  //O si es inscripto (Res inscripto, Exento, etc...) 
+         *      .
+         *      ImpTotConc: number,
+                ImpNeto: number,
+                ImpOpEx: number,
+                ImpIVA: number,
+                ImpTrib: number,
+                Tributos?: {
+                    id: TiposTributo,
+                        BaseImp: number,
+                        Alic: number,
+                        Importe: number,
+                        Desc?: string,
+                    },
+                    Iva?: {
+                        Id: AlicuotasIva,
+                        BaseImp: number,
+                        Importe: number
+                    }
+         *      }
+
+         * //Puede utilizar la función de obetener la última factura para crear una nueva (usando la siguiente)
+         *  const nfact = await this.lastFact(dataFactReq.PtoVta, dataFactReq.CbteTipo);
+            dataFactReq.CbteDesde = Number(nfact.data) + 1;
+            const dataFactRes = await this.afip.ElectronicBilling.createVoucher(dataFactReq);
+            dataFactReq.CAE = dataFactRes.CAE
+            dataFactReq.CAEFchVto = dataFactRes.CAEFchVto
+            return dataFactReq
+            //Obtiene todos los datos de la factura, junto con el CAE y VtoCAE
+            @returns dataFactReq
+         *
+         */
         createVoucher(data:
             FactMonotribProd
             | FactMonotribServ
@@ -172,6 +455,7 @@ declare module "ts-afip-ws" {
     }
 
     /**
+     * Instrucciones para armar el objeto AFIP y con él realizar las consultas
      * @param CUIT Es el cuit del contribuyente, quién va a realizar la consulta.
      * @param res_folder Es el directorio raíz del certificado y la llave       
      * @param cert Es el nombre del certificado.       
@@ -181,7 +465,7 @@ declare module "ts-afip-ws" {
      *       
      * @example
      * //Se importa el módulo jretondo-afip-ws 
-     * import Afip from 'jretondo-afip-ws';
+     * import Afip from 'ts-afip-ws';
      * 
      * //Cree una interface con la respuesta que va a esperar a la salida
      * interface ResponseAfip {

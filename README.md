@@ -1,158 +1,401 @@
-//Este repositorio es un fork creado para dar soporte a typescript => Luego haré más documentación al respecto.
-//La idea es expandir este fork para que pueda ser lo más sencillo de usar y adaptable a cualquier necesidad
+# Integracion con los servicios web de afip
+-----------------------------------------
 
-<!-- PROJECT SHIELDS -->
-[![NPM][npm-shield]](https://www.npmjs.com/package/@afipsdk/afip.js)
-[![Contributors][contributors-shield]](https://github.com/afipsdk/afip.js/graphs/contributors)
-[![Closed issues][issues-shield]](https://github.com/afipsdk/afip.js/issues)
-[![License][license-shield]](https://github.com/afipsdk/afip.js/blob/master/LICENSE)
+## Introducción
 
-<!-- PROJECT LOGO -->
-<br />
-<p align="center">
-  <a href="https://github.com/afipsdk/afip.js">
-    <img src="https://github.com/afipsdk/afipsdk.github.io/blob/master/images/logo-colored.png" alt="Afip.js" width="130" height="130">
-  </a>
+Implementación de los accesos a las apis de afip para nodejs.
+En esta versión estan implementados
+- [WSAA](#wsaa) WebService de Autenticación y Autorización
+- [wsfev1](#wsfev1) WebService de factura electrónica
+- [ws_sr_padron_a5](#ws_sr_padron_a10) WebService de Consulta a Padrón Alcance 10
+- [ws_sr_padron_a13 v1.2](#ws_sr_padron_a13) WebService de Consulta a Padrón Alcance 13. [Manual para el desarrollador](http://www.afip.gob.ar/ws/ws-padron-a13/manual-ws-sr-padron-a13-v1.2.pdf)
+- [ws_sr_constancia_inscripcion](#ws_sr_constancia_inscripcion) Consulta a Padrón Constancia de Inscripción
+- [WSCDC](#WSCDC) Constatacion de Comprobantes
 
-  <h3 align="center">Afip.js</h3>
+## Errores
 
-  <p align="center">
-    Librería para conectarse a los Web Services de AFIP
-    <br />
-    <a href="https://github.com/afipsdk/afip.js/wiki"><strong>Explorar documentación »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/afipsdk/afip.js/issues">Reportar un bug</a>
-  </p>
-</p>
+En el caso de encontrar un error, crear un issue en el sitio de [seguimiento de errores](https://itstuff.com.ar/redmine/projects/npm-afip-apis/issues)
 
-<!-- TABLE OF CONTENTS -->
-## Tabla de contenidos
+## Documentación
 
-* [Acerca del proyecto](#acerca-del-proyecto)
-* [Guia de inicio](#guia-de-inicio)
-  * [Instalacion](#instalacion)
-  * [Como usarlo](#como-usarlo)
-* [Web Services](#web-services)
-  * [Factura electronica](#factura-electronica)
-  * [Padron alcance 4](#padron-alcance-4)
-  * [Padron alcance 5](#padron-alcance-5)
-  * [Padron alcance 10](#padron-alcance-10)
-  * [Padron alcance 13](#padron-alcance-13)
-  * [🎉 Otro web service](#otro-web-service)
-* [Proyectos relacionados](#proyectos-relacionados)
-* [¿Necesitas ayuda? 🚀](#necesitas-ayuda-)
-* [Licencia](#licencia)
-* [Contacto](#contacto)
+* [Sitio del Proyecto](https://itstuff.com.ar/redmine/projects/npm-afip-apis)
 
+* [Introducción](#introducción)
+* [Instalación](#instalación)
+* [Uso](#uso)
+* [Testing](#testing)
+* [Documentación Afip](http://www.afip.gob.ar/ws/)
 
+## Instalación
 
-<!-- ABOUT THE PROJECT -->
-## Acerca del proyecto
-Afip SDK es la forma más rápida y simple de conectarse con los Web Services de AFIP.
-
-Esta librería fue creada con la intención de ayudar a los programadores a usar los Web Services de AFIP sin romperse la cabeza ni perder tiempo tratando de entender la complicada documentación que AFIP provee. Ademas forma parte de [Afip SDK](https://afipsdk.com/).
-
-
-<!-- START GUIDE -->
-## Guia de inicio
-
-### Instalacion
-#### Via npm
+### Para instalar usando npm
 
 ```
-npm install --save @afipsdk/afip.js
+npm install -S afip-apis
 ```
 
-#### Via Yarn
+### Obtención de los certificados para el ambiente de homologación
+
+Seguir los pasos en la documentación oficial:
+
+- [¿Cómo obtener el Certificado Digital para entorno de producción?](http://www.afip.gob.ar/ws/WSAA/wsaa_obtener_certificado_produccion.pdf)
+- [¿Cómo asociar el Certificado Digital a un WSN (Web Service de Negocio)?](http://www.afip.gob.ar/ws/WSAA/wsaa_asociar_certificado_a_wsn_produccion.pdf)
+- Certificado y autorización en el entorno de homologacion.
+Ingresar con clave fiscal a [www.afip.gob.ar](http://www.afip.gob.ar)
+Opcion [WSASS - Autogestión Certificados Homologación](https://wsass-homo.afip.gob.ar/wsass/portal/main.aspx)
+Esta es la opcion para _Autogestión de certificados para Servicios Web en los ambientes de homologación_
+Que permite obtener los certificados y asociar servicios para probar la API en el entorno de homologación.
+
+## Uso
+
+En el diretorio **test** hay más ejemplos, incluyendo las pruebas de todos los metodos de los webservices de factura electrónica y factura electrónica de exportación.
+
+### Javascript
+
+Aunque hay algunos ejemplos en javascript, La mayoria de los ejemplos estan en [Typescript](#Typescript)
+
+Ejemplo de autenticacion usando [wsaa](http://www.afip.gob.ar/ws/paso4.asp?noalert=1) y consulta al metodo Dummy del servicio de facturación electrónica [wsfev1](http://www.afip.gob.ar/ws/paso4.asp?noalert=1) en javascript
+Antes de usar el ejemplo, tenes que tener generado un certificado, al menos de homologación. En el ejemplo el certificado y la clave
+estan en el path definido en DEFAULT_CERTIFICATE y DEFAULT_CERTIFICATE_KEY
 
 ```
-yarn add @afipsdk/afip.js
+"use strict";
+
+var afip_apis_1 = require("afip-apis");
+var DEFAULT_URLWSAAWSDL = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?WSDL";
+var DEFAULT_SERVICIO = "wsfe";
+var DEFAULT_CERTIFICATE = "./private/certificate/TEST/09.2021/afip-test.crt";
+var DEFAULT_CERTIFICATE_KEY = "./private/certificate/TEST/09.2021/afip-test.key";
+var loginTicket = new afip_apis_1.LoginTicket();
+loginTicket.wsaaLogin(DEFAULT_SERVICIO, DEFAULT_URLWSAAWSDL, DEFAULT_CERTIFICATE, DEFAULT_CERTIFICATE_KEY)
+  .then(function (r) {
+    console.log(r.header);
+    var wsfev1 = new afip_apis_1.Wsfev1("https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL");
+    return wsfev1.FEDummy({})
+      .then(function (d) {
+        console.log(d);
+      });
+  })
+  .catch(function (e) { return console.error(e); });
 ```
 
-**Siguiente paso** 
-* Remplazar *node_modules/@afipsdk/afip.js/Afip_res/cert* por tu certificado provisto por AFIP y *node_modules/@afipsdk/afip.js/Afip_res/key* por la clave generada. 
-* La carpeta *Afip_res* deberá tener permisos de escritura.
+### Typescript
 
-Ir a http://www.afip.gob.ar/ws/documentacion/certificados.asp para obtener mas información de como generar la clave y certificado
+A continuacion hay algunos ejemplos de uso en *TypeScript*
 
-# Como usarlo
+#### wsaa
 
-Lo primero es incluir el SDK en tu aplicación
-````js
-const Afip = require('@afipsdk/afip.js');
-````
+Ejemplo de autenticacion usando [wsaa](http://www.afip.gob.ar/ws/paso4.asp?noalert=1) y consulta al metodo Dummy del servicio de facturación electrónica [wsfev1](http://www.afip.gob.ar/ws/paso4.asp?noalert=1) en typescript
 
-Luego creamos una instancia de la clase Afip pasandole un Objeto como parámetro.
-````js
-const afip = new Afip({ CUIT: 20111111112 });
-````
+```
+import { LoginTicket, Wsfev1 } from "afip-apis";
+
+const DEFAULT_URLWSAAWSDL: string = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?WSDL";
+const DEFAULT_SERVICIO: string = "wsfe";
+const DEFAULT_CERTIFICATE: string = "./private/certificate/TEST/09.2021/afip-test.crt";
+const DEFAULT_CERTIFICATE_KEY: string = "./private/certificate/TEST/09.2021/afip-test.key";
 
 
-Para más información acerca de los parámetros que se le puede pasar a la instancia new `Afip()` consulte sección [Primeros pasos](https://github.com/afipsdk/afip.js/wiki/Primeros-pasos#como-usarlo) de la documentación
+const loginTicket: LoginTicket = new LoginTicket();
+loginTicket.wsaaLogin(DEFAULT_SERVICIO, DEFAULT_URLWSAAWSDL, DEFAULT_CERTIFICATE, DEFAULT_CERTIFICATE_KEY)
+  .then(r => {
+    console.log(r.header);
+    const wsfev1: Wsfev1 = new Wsfev1("https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL");
+    return wsfev1.FEDummy({})
+      .then(d => {
+        console.log(d);
+      });
+  })
+  .catch(e => console.error(e));
+```
 
-Una vez realizado esto podemos comenzar a usar el SDK con los Web Services disponibles
+en la consola se ve el resultado
+
+```
+{ source: 'CN=wsaahomo, O=AFIP, C=AR, SERIALNUMBER=CUIT 33693450239',
+  destination: 'SERIALNUMBER=CUIT 20999999999, CN=certificadodeprueba',
+  uniqueId: '308192521',
+  generationTime: '2018-09-21T10:51:22.653-03:00',
+  expirationTime: '2018-09-21T22:51:22.653-03:00' }
+{ FEDummyResult: { AppServer: 'OK', DbServer: 'OK', AuthServer: 'OK' } }
+```
+
+con el encabezado del ticket de autenticación y el resultado del metodo FEDummy
+
+en las constantes
+```
+const DEFAULT_CERTIFICATE: string = "./private/certificate/TEST/09.2021/afip-test.crt";
+const DEFAULT_CERTIFICATE_KEY: string = "./private/certificate/TEST/09.2021/afip-test.key";
+```
+se incluye el path al certificado y la clave privada
+
+#### wsfev1
+
+Ejemplo de consulta de tipos de iva
+
+```
+const DEFAULT_CERTIFICATE: string = "./private/certificate/TEST/09.2021/afip-test.crt";
+const DEFAULT_CERTIFICATE_KEY: string = "./private/certificate/TEST/09.2021/afip-test.key";
+
+const loginTicket = new LoginTicket();
+const wsfev1 = new Wsfev1(Wsfev1.testWSDL);
+
+loginTicket.wsaaLogin(Wsfev1.serviceId, DEFAULT_URLWSAAWSDL, DEFAULT_CERTIFICATE, DEFAULT_CERTIFICATE_KEY)
+  .then(ticket => {
+    console.log("ticket:");
+    console.log(ticket.header);
+    wsfev1.FEDummy({})
+      .then(r => {
+        console.log("FEDummy:");
+        console.log(r);
+        return wsfev1.FEParamGetTiposIva({
+          Auth: {
+            Token: ticket.credentials.token,
+            Sign: ticket.credentials.sign,
+            Cuit: 20999999999
+          }
+        })
+          .then(r => {
+            console.log("FEParamGetTiposIva:");
+            if (r.FEParamGetTiposIvaResult.Errors) {
+              console.error(r.FEParamGetTiposIvaResult.Errors);
+            } else {
+              console.log(r.FEParamGetTiposIvaResult.ResultGet);
+            }
+          });
+      });
+  })
+  .catch(e => {
+    console.error(e);
+  });
+
+```
+
+resultado
+
+```
+ticket:
+   { source: 'CN=wsaahomo, O=AFIP, C=AR, SERIALNUMBER=CUIT 33693450239',
+     destination: 'SERIALNUMBER=CUIT 20999999999, CN=certificadodeprueba',
+     uniqueId: '2894537894',
+     generationTime: '2018-09-21T15:30:27.045-03:00',
+     expirationTime: '2018-09-22T03:30:27.045-03:00' }
+
+FEDummy:
+{ FEDummyResult: { AppServer: 'OK', DbServer: 'OK', AuthServer: 'OK' } }
+
+FEParamGetTiposIva:
+{ IvaTipo:
+   [ { Id: '3', Desc: '0%', FchDesde: '20090220', FchHasta: 'NULL' },
+     { Id: '4', Desc: '10.5%', FchDesde: '20090220', FchHasta: 'NULL' },
+     { Id: '5', Desc: '21%', FchDesde: '20090220', FchHasta: 'NULL' },
+     { Id: '6', Desc: '27%', FchDesde: '20090220', FchHasta: 'NULL' },
+     { Id: '8', Desc: '5%', FchDesde: '20141020', FchHasta: 'NULL' },
+     { Id: '9', Desc: '2.5%', FchDesde: '20141020', FchHasta: 'NULL' } ] }
+```
+
+#### ws_sr_padron_a10 (WebService de Consulta a Padrón Alcance 10)
+
+> El padrón de alcance 10 es de acceso restringido, y ha sido dado de baja en produción.
+
+#### ws_padron_a13 (WebService de Consulta a Padrón Alcance 13 v1.2)
+
+El siguiente código consulta el Padron de nivel 13
+
+```
+const DEFAULT_CERTIFICATE: string = "./private/certificate/TEST/09.2021/afip-test.crt";
+const DEFAULT_CERTIFICATE_KEY: string = "./private/certificate/TEST/09.2021/afip-test.key";
+const DEFAULT_URLWSAAWSDL: string = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?WSDL";
+
+const loginTicket = new LoginTicket();
+
+loginTicket.wsaaLogin(PersonaServiceA13.serviceId, DEFAULT_URLWSAAWSDL, DEFAULT_CERTIFICATE, DEFAULT_CERTIFICATE_KEY)
+  .then(ticket => {
+    console.log("=== ticket ===");
+    console.log(JSON.stringify(ticket));
+    const a13 = new PersonaServiceA13(PersonaServiceA13.testWSDL);
+    return a13.dummy({})
+      .then(r => {
+        console.log(`===dummy===\n${JSON.stringify(r)}`);
+        return a13.getIdPersonaListByDocumento({
+          token: ticket.credentials.token,
+          sign: ticket.credentials.sign,
+          cuitRepresentada,
+          documento
+        });
+      })
+      .then(id => {
+        console.log(`===getIdPersonaListByDocumento===\n${JSON.stringify(id)}`);
+        return a13.getPersona({
+          token: ticket.credentials.token,
+          sign: ticket.credentials.sign,
+          cuitRepresentada,
+          idPersona: id.idPersonaListReturn.idPersona
+        });
+      })
+      .then(p => {
+        console.log(`===getPersona===\n${JSON.stringify(p)}`);
+        console.log("=== FIN ===");
+      });
+  })
+  .catch(err => {
+    console.error(err);
+  });
+
+```
+En la consola se puede ver el resultado
+
+```
+===dummy===
+{
+  "return": {
+    "appserver": "OK",
+    "authserver": "OK",
+    "dbserver": "OK"
+  }
+}
+===getIdPersonaListByDocumento===
+{
+  "idPersonaListReturn": {
+    "idPersona": "20106316725",
+    "metadata": {
+      "fechaHora": "2019-11-07T17:12:01.770-03:00",
+      "servidor": "setiwsh1.afip.gov.ar"
+    }
+  }
+}
+===getPersona===
+{
+  "personaReturn": {
+    "metadata": {
+      "fechaHora": "2019-11-07T17:12:02.031-03:00",
+      "servidor": "setiwsh1.afip.gov.ar"
+    },
+    "persona": {
+      "apellido": "BERNARD JAMES",
+      "descripcionActividadPrincipal": "SERVICIOS DE ASESORAMIENTO,DIRECCION Y GESTION EMPRESARIAL N.C.P.",
+      "domicilio": [
+        {
+        },
+        {
+        }
+      ],
+      "estadoClave": "ACTIVO",
+      "fechaNacimiento": "1954-04-03T12:00:00-03:00",
+      "idActividadPrincipal": "741409",
+      "idPersona": "20106316725",
+      "mesCierre": "12",
+      "nombre": "JUAN ANGEL",
+      "numeroDocumento": "10631672",
+      "periodoActividadPrincipal": "201012",
+      "tipoClave": "CUIT",
+      "tipoDocumento": "DNI",
+      "tipoPersona": "FISICA"
+    }
+  }
+}
+=== FIN ===
+```
+
+#### ws_sr_constancia_inscripcion (Consulta a Padrón Constancia de Inscripción)
+
+Similar a [ws_sr_padron_a10](#ws_sr_padron_a10) WebService de Consulta a Padrón Alcance 10
+
+#### WSCDC (Constatación de Comprobantes)
+
+El siguiente código consulta la validez de un comprobante
+
+```
+const DEFAULT_CERTIFICATE: string = "./private/certificate/TEST/09.2021/afip-test.crt";
+const DEFAULT_CERTIFICATE_KEY: string = "./private/certificate/TEST/09.2021/afip-test.key";
+const DEFAULT_URLWSAAWSDL: string = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?WSDL";
+
+const loginTicket = new LoginTicket();
+const wscdcv1 = new Wscdcv1(Wscdcv1.testWSDL);
 
 
-<!-- WEB SERVICES -->
-## Web Services
+loginTicket.wsaaLogin(Wscdcv1.serviceId, DEFAULT_URLWSAAWSDL, DEFAULT_CERTIFICATE, DEFAULT_CERTIFICATE_KEY)
+  .then(ticket => {
+    console.log("ticket:");
+    console.log(ticket.header);
+    return wscdcv1.ComprobanteConstatar({
+      Auth: {
+        Token: ticket.credentials.token,
+        Sign: ticket.credentials.sign,
+        Cuit: 20221536999
+      },
+      CmpReq: {
+        CbteModo: "CAE",
+        CuitEmisor: 30639453738,
+        PtoVta: 8340,
+        CbteTipo: 6,
+        CbteNro: 35100022,
+        CbteFch: "20181108",
+        ImpTotal: 127200,
+        CodAutorizacion: "68428424451327",
+        DocTipoReceptor: "96",
+        DocNroReceptor: "99777666"
+      }
+    })
+      .then(r => {
+        console.log("=== ComprobanteConstatar ===");
+        console.log(`resultado (A=Aprobado, R=Rechazado): ${r.ComprobanteConstatarResult.Resultado}. Observacion: ${JSON.stringify(r.ComprobanteConstatarResult.Observaciones)}`);
+        console.log("=== FIN ===");
+      });
+  })
+  .catch(e => {
+    console.error(e);
+  });
 
-Si necesitas más información de cómo utilizar algún web service echa un vistazo a la [documentación completa de afip.js](https://github.com/afipsdk/afip.js/wiki)
+```
 
-### Factura electronica
-Podes encontrar la documentación necesaria para utilizar la [facturación electrónica](https://github.com/afipsdk/afip.js/wiki/Facturaci%C3%B3n-Electr%C3%B3nica) 👈 aquí
+## Testing
 
-### Padron alcance 4
-El Servicio Web de Consulta de Padrón denominado A4 ha quedado limitado para Organismos Públicos, si lo necesitas puedes leer la documentación de [consulta al padrón de AFIP alcance 4](https://github.com/afipsdk/afip.js/wiki/Consulta-al-padron-de-AFIP-alcance-4)
+```
+npm test
+```
+En el directorio test hay mas ejemplos incluidos pruebas de todos los metodos de los webservices de factura electrónica y factura electrónica de exportación.
 
-### Padron alcance 5
-Quienes usaban el padrón A4 pueden utilizar este padrón en modo de remplazo, si queres saber cómo echa un vistazo a la documentación de [consulta al padrón de AFIP alcance 5](https://github.com/afipsdk/afip.js/wiki/Consulta-al-padron-de-AFIP-alcance-5)
+# Changelog
 
-### Padron alcance 10
-Si tenes que utilizar este web service también está disponible dentro de la librería, su documentación se encuentra en [consulta al padrón de AFIP alcance 10](https://github.com/afipsdk/afip.js/wiki/Consulta-al-padron-de-AFIP-alcance-10)
+## [0.3.0] - 2019-07-04
+### Added
+- Constatación de Comprobantes [ManualDelDesarrolladorWSCDCV1.pdf](https://www.afip.gob.ar/ws/WSCDCV1/ManualDelDesarrolladorWSCDCV1.pdf)
 
-### Padron alcance 13
-Si debes consultar por el CUIT de una persona física tendrás que utilizar este web service, su documentación se encuentra disponible en la wiki de [consulta al padrón de AFIP alcance 13](https://github.com/afipsdk/afip.js/wiki/Consulta-al-padron-de-AFIP-alcance-13)
+### Changed
+- Actualización de Dependencias
 
-### Otro web service
-Si necesitas usar algún otro web service la versión PRO incluye un tutorial completo para integrar cualquier otro web service de AFIP
+### Removed
+- none
 
+## [0.3.2] - 2019-11-07
+### Added
+- [ws_sr_padron_a13](#ws_sr_padron_a13) WebService de Consulta a Padrón Alcance 13. [manual-ws-sr-padron-a13-v1.2.pdf](http://www.afip.gob.ar/ws/ws-padron-a13/manual-ws-sr-padron-a13-v1.2.pdf)
+- Alerta de depreciación para [ws_sr_padron_a10](#ws_sr_padron_a10)
 
-**[Saber más](https://afipsdk.com/pro.html)**
+### Changed
+- Actualización de Dependencias
 
+### Removed
+- none
 
-<!-- RELATED PROJECTS-->
-### Proyectos relacionados
+## [0.3.3] - 2019-11-13
+### Added
 
-#### Libreria para PHP
-Si necesitas acceder los web services de AFIP en **PHP** podes utilizar [Afip.php](https://github.com/afipsdk/afip.php)
+### Changed
+- Fix error en debug
+- Fix error en duracion del ticket
+- Fix Promise handle cuando hay errores en los archivos de certificado.
 
-<!-- AFIP SDK PRO -->
-### ¿Necesitas ayuda? 🚀
+### Removed
+- none
 
-¿Quieres implementarlo de forma rápida y fiable? Obtén Afip SDK PRO que incluye soporte y ayuda personalizada por 6 meses donde te ayudaremos integrar los web services de Afip con tu aplicación, y una amplia documentación con ejemplos, tutoriales, implementación en Frameworks y plataformas, y mucho más.
+## [0.3.4] - 2019-11-14
+### Added
 
+### Changed
+- actualizacion de ws_rem_harina (no documentado) a version 2.1. [Manual para el desarrollador v2.1](http://www.afip.gob.ar/ws/remitoHTSDMT/Manual-Desarrollador-WSREMHARINA-v-2-1.pdf)
+- Actualización de Dependencias
 
-**[Saber más](https://afipsdk.com/pro.html)**
-
-
-<!-- LICENCE -->
-### Licencia
-Distribuido bajo la licencia MIT. Vea `LICENSE` para más información.
-
-
-<!-- CONTACT -->
-### Contacto
-Afip SDK - afipsdk@gmail.com
-
-Link del proyecto: [https://github.com/afipsdk/afip.js](https://github.com/afipsdk/afip.js)
-
-
-_Este software y sus desarrolladores no tienen ninguna relación con la AFIP._
-
-
-<!-- MARKDOWN LINKS & IMAGES -->
-[npm-shield]: https://img.shields.io/npm/dw/@afipsdk/afip.js.svg
-[contributors-shield]: https://img.shields.io/github/contributors/afipsdk/afip.js.svg?color=orange
-[issues-shield]: https://img.shields.io/github/issues-closed-raw/afipsdk/afip.js.svg?color=blueviolet
-[license-shield]: https://img.shields.io/github/license/afipsdk/afip.js.svg?color=blue
+### Removed
+- none
