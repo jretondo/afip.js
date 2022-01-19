@@ -10,7 +10,7 @@ En esta versión estan implementados
 - [wsfev1](#wsfev1) WebService de factura electrónica
 - [ws_sr_padron_a4](#ws_sr_padron_a4) WebService de Consulta a Padrón Alcance 4 (sólo JS)
 - [ws_sr_padron_a5](#ws_sr_padron_a5) WebService de Consulta a Padrón Alcance 5
-- [ws_sr_padron_a5](#ws_sr_padron_a10) WebService de Consulta a Padrón Alcance 10 (sólo JS)
+- [ws_sr_padron_a10](#ws_sr_padron_a10) WebService de Consulta a Padrón Alcance 10 (sólo JS)
 - [ws_sr_padron_a13](#ws_sr_padron_a13) WebService de Consulta a Padrón Alcance 13. (sólo JS)
 
 ## Errores
