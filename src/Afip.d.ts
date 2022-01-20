@@ -158,27 +158,27 @@ declare interface FactInscriptos {
     ImpOpEx: number,
     ImpIVA: number,
     ImpTrib: number,
-    Tributos?: {
+    Tributos?: Array<{
         id: TiposTributo,
         BaseImp: number,
         Alic: number,
         Importe: number,
         Desc?: string,
-    },
-    Iva?: {
+    }>,
+    Iva?: Array<{
         Id: AlicuotasIva,
         BaseImp: number,
         Importe: number
-    }
+    }>
 }
 
 declare interface FactNotaCred {
-    CbtesAsoc: {
+    CbtesAsoc: Array<{
         Tipo: CbteTipos,
         PtoVta: number,
         Nro: number,
         Cuit: number
-    }
+    }>
 }
 
 declare interface FactMonotribProd extends FactBase, FactMonotrib, FactProductos {
