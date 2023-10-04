@@ -6,7 +6,7 @@ const AfipWebService = require('./AfipWebService');
  * @link http://www.afip.gob.ar/ws/ws_sr_padron_a5/manual_ws_sr_padron_a5_v1.0.pdf WS Specification
  **/
 module.exports = class RegisterScopeFive extends AfipWebService {
-	constructor(afip){
+	constructor(afip) {
 		const options = {
 			soapV12: false,
 			WSDL: 'ws_sr_padron_a5-production.wsdl',
@@ -42,7 +42,7 @@ module.exports = class RegisterScopeFive extends AfipWebService {
 	 **/
 	async getTaxpayerDetails(identifier) {
 		// Get token and sign
-		let { token, sign } = await this.afip.GetServiceTA('ws_sr_padron_a5');
+		let { token, sign } = await this.afip.GetServiceTA('ws_sr_constancia_inscripcion');
 
 		// Prepare SOAP params
 		let params = {
@@ -50,10 +50,10 @@ module.exports = class RegisterScopeFive extends AfipWebService {
 			cuitRepresentada: this.afip.CUIT,
 			idPersona: identifier
 		};
-		
+
 		return this.executeRequest('getPersona_v2', params)
-		.then(res => res)
-		.catch(err => { if (err.message.indexOf('No existe') !== -1) { return null } else { throw err }});
+			.then(res => res)
+			.catch(err => { if (err.message.indexOf('No existe') !== -1) { return null } else { throw err } });
 	}
 
 	/**
@@ -73,9 +73,9 @@ module.exports = class RegisterScopeFive extends AfipWebService {
 			cuitRepresentada: this.afip.CUIT,
 			idPersona: identifiers
 		};
-		
+
 		return this.executeRequest('getPersonaList_v2', params)
-		.then(res => res.persona);
+			.then(res => res.persona);
 	}
 
 	/**
@@ -86,14 +86,13 @@ module.exports = class RegisterScopeFive extends AfipWebService {
 	 *
 	 * @return mixed Operation results 
 	 **/
-	async executeRequest(operation, params = {})
-	{
+	async executeRequest(operation, params = {}) {
 		let results = await super.executeRequest(operation, params);
 
 		return results[
 			operation === 'getPersona_v2' ? 'personaReturn' :
-				(operation === 'getPersonaList_v2' ? 'personaListReturn': 'return')
-			];
+				(operation === 'getPersonaList_v2' ? 'personaListReturn' : 'return')
+		];
 	}
 }
 
